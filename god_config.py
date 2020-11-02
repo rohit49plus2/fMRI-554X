@@ -7,11 +7,11 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 analysis_name = 'GenericObjectDecoding'
 
 # Data settings
-subjects = {'Subject1' : [dir_path+'/data/Subject1.h5'],
-            'Subject2' : [dir_path+'/data/Subject2.h5'],
-            'Subject3' : [dir_path+'/data/Subject3.h5'],
-            'Subject4' : [dir_path+'/data/Subject4.h5'],
-            'Subject5' : [dir_path+'/data/Subject5.h5']}
+subjects = {'Subject1' : dir_path+'/original code/data/Subject1.h5',
+            'Subject2' : dir_path+'/original code/data/Subject2.h5',
+            'Subject3' : dir_path+'/original code/data/Subject3.h5',
+            'Subject4' : dir_path+'/original code/data/Subject4.h5',
+            'Subject5' : dir_path+'/original code/data/Subject5.h5'}
 
 rois = {'VC' : 'ROI_VC = 1',
         'LVC' : 'ROI_LVC = 1',
@@ -35,7 +35,7 @@ num_voxel = {'VC' : 1000,
              'FFA' : 500,
              'PPA' : 500}
 
-image_feature_file = dir_path+'/data/ImageFeatures.h5'
+image_feature_file = dir_path+'/original code/data/ImageFeatures.h5'
 features = ['cnn1', 'cnn2', 'cnn3', 'cnn4', 'cnn5', 'cnn6', 'cnn7', 'cnn8', 'hmax1', 'hmax2', 'hmax3', 'gist', 'sift']
 
 # Results settings

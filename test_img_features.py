@@ -27,8 +27,17 @@ subject1=bdpy.BData(subjects['Subject1'])
 image_features=bdpy.BData(image_feature_file)
 for roi in rois:
     x=subject1.select(rois[roi])#load fMRI data
-    datatype=datatype = dat.select('DataType')   # Data type
-    labels = dat.select('stimulus_id')  # Image labels in brain data
+    datatype=datatype = subject1.select('DataType')   # Data type
+    labels = subject1.select('stimulus_id')  # Image labels in brain data
     print("roi: ", roi)
-    print("datatype: ", datatype)
-    print("labels: ", labels)
+    print("x shape: ", x.shape)
+    print("datatype shape: ", datatype.shape)
+    print("labels shape: ", labels.shape)
+    i_train = (datatype == 1).flatten()    # Index for training
+    i_test_pt = (datatype == 2).flatten()  # Index for perception test
+    i_test_im = (datatype == 3).flatten()  # Index for imagery test
+    print("indexes for imagery:", i_test_im)
+    print("labels unique",np.unique(labels).shape)
+    print("i_train sum",i_train.sum())
+    print("i_test_pt sum",i_test_pt.sum())
+    print("i_test_im sum",i_test_im.sum())
