@@ -24,6 +24,17 @@ rois = {'VC' : 'ROI_VC = 1',
         'FFA' : 'ROI_FFA = 1',
         'PPA' : 'ROI_PPA = 1'}
 
+area = {'VC' : 'ROI_VC',
+        'LVC' : 'ROI_LVC',
+        'HVC' : 'ROI_HVC',
+        'V1' : 'ROI_V1',
+        'V2' : 'ROI_V2',
+        'V3' : 'ROI_V3',
+        'V4' : 'ROI_V4',
+        'LOC' : 'ROI_LOC',
+        'FFA' : 'ROI_FFA',
+        'PPA' : 'ROI_PPA'}
+
 num_voxel = {'VC' : 1000,
              'LVC' : 1000,
              'HVC' : 1000,
