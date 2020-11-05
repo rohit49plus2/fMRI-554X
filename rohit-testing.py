@@ -50,5 +50,5 @@ for roi in rois:
     print("i_train sum",i_train.sum())
     print("i_test_pt sum",i_test_pt.sum())
     print("i_test_im sum",i_test_im.sum())
-
+    
 subject1.show_metadata()
