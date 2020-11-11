@@ -20,6 +20,8 @@ from bdpy.util import makedir_ifnot, get_refdata
 from bdpy.dataform import append_dataframe
 from bdpy.distcomp import DistComp
 from god_config import * #import metadata from this script
+
+from tqdm import tqdm
 # Main #################################################################
 
 #Load subject 1's data
@@ -43,6 +45,7 @@ print("labels unique",np.unique(labels).shape)
 print("i_train sum",i_train.sum())
 print("i_test_pt sum",i_test_pt.sum())
 print("i_test_im sum",i_test_im.sum())
+
 
 for roi in {'VC' : 'ROI_VC = 1'}:
     x=subject1.select(rois[roi])#load fMRI data
@@ -82,18 +85,28 @@ def coordinates(roi):
     co=[]
     for i in range(len(voxel_x)):
         co.append((voxel_x[i],voxel_y[i],voxel_z[i]))
-
     return(co)
 
 def padded_coordinates(roi):
     voxel_x = subject1.get_metadata('voxel_x', where=area[roi])
     voxel_y = subject1.get_metadata('voxel_y', where=area[roi])
     voxel_z = subject1.get_metadata('voxel_z', where=area[roi])
-    x_shape=len(voxel_x)
-    y_shape=len(voxel_y)
-    z_shape=len(voxel_z)
-    pc=np.zeros((x_shape,y_shape,z_shape))
+    fmri = subject1.select(rois[roi])
+    x_shape=int((voxel_x.max()-voxel_x.min())/3+1)
+    y_shape=int((voxel_y.max()-voxel_y.min())/3+1)
+    z_shape=int((voxel_z.max()-voxel_z.min())/3+1)
+    pc=np.zeros((fmri.shape[0],x_shape,y_shape,z_shape))
+    for n in range(10):
+        for i in tqdm(range(len(voxel_x))):
+            x=voxel_x[i]
+            y=voxel_y[i]
+            z=voxel_z[i]
+            x_ind = int((x - voxel_x.min())/3)
+            z_ind = int((z - voxel_z.min())/3)
+            y_ind = int((y - voxel_y.min())/3)
+            pc[n][x_ind][y_ind][z_ind]=fmri[n][i]
 
+    return(pc)
 
 
 print(len(np.unique(voxel_x)))
@@ -101,7 +114,7 @@ print(len(np.unique(voxel_y)))
 print(len(np.unique(voxel_z)))
 print(len(np.unique(voxel_x))*len(np.unique(voxel_y))*len(np.unique(voxel_z)))
 
-print(coordinates('V4'))
+# print(coordinates('V4'))
 # plot_fmri_colors('V4')
 # plot_fmri_colors('V3')
 # plot_fmri_colors('V2')
@@ -109,4 +122,8 @@ print(coordinates('V4'))
 # plot_fmri_colors('FFA')
 # plot_fmri_colors('LOC')
 # plot_fmri_colors('PPA')
-plot_fmri_colors('VC')
+# plot_fmri_colors('VC')
+
+vc_padded=padded_coordinates('VC')
+print(vc_padded.shape)
+print(np.nonzero(vc_padded))
