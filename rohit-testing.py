@@ -87,32 +87,39 @@ def coordinates(roi):
         co.append((voxel_x[i],voxel_y[i],voxel_z[i]))
     return(co)
 
-def padded_coordinates(roi):
-    voxel_x = subject1.get_metadata('voxel_x', where=area[roi])
+
+full_voxel_x = subject1.get_metadata('voxel_x', where=area['VC'])
+full_voxel_y = subject1.get_metadata('voxel_y', where=area['VC'])
+full_voxel_z = subject1.get_metadata('voxel_z', where=area['VC'])
+full_x_shape=int((voxel_x.max()-voxel_x.min())/3+1)
+full_y_shape=int((voxel_y.max()-voxel_y.min())/3+1)
+full_z_shape=int((voxel_z.max()-voxel_z.min())/3+1)
+def padded_fmri(roi):
+    """
+    takes any region and makes it a 3d array in the shape of a cube that would fit the whole VC
+    """
+    voxel_x = subject1.get_metadata('voxel_x', where=area[roi])#might be smaller than full size for other regions
     voxel_y = subject1.get_metadata('voxel_y', where=area[roi])
     voxel_z = subject1.get_metadata('voxel_z', where=area[roi])
     fmri = subject1.select(rois[roi])
-    x_shape=int((voxel_x.max()-voxel_x.min())/3+1)
-    y_shape=int((voxel_y.max()-voxel_y.min())/3+1)
-    z_shape=int((voxel_z.max()-voxel_z.min())/3+1)
-    pc=np.zeros((fmri.shape[0],x_shape,y_shape,z_shape))
-    for n in range(10):
+    pc=np.zeros((fmri.shape[0],full_x_shape,full_y_shape,full_z_shape))
+    for n in range(fmri.shape[0]):
         for i in tqdm(range(len(voxel_x))):
             x=voxel_x[i]
             y=voxel_y[i]
             z=voxel_z[i]
-            x_ind = int((x - voxel_x.min())/3)
-            z_ind = int((z - voxel_z.min())/3)
-            y_ind = int((y - voxel_y.min())/3)
+            x_ind = int((x - full_voxel_x.min())/3)
+            z_ind = int((z - full_voxel_z.min())/3)
+            y_ind = int((y - full_voxel_y.min())/3)
             pc[n][x_ind][y_ind][z_ind]=fmri[n][i]
 
     return(pc)
 
 
-print(len(np.unique(voxel_x)))
-print(len(np.unique(voxel_y)))
-print(len(np.unique(voxel_z)))
-print(len(np.unique(voxel_x))*len(np.unique(voxel_y))*len(np.unique(voxel_z)))
+# print(len(np.unique(voxel_x)))
+# print(len(np.unique(voxel_y)))
+# print(len(np.unique(voxel_z)))
+# print(len(np.unique(voxel_x))*len(np.unique(voxel_y))*len(np.unique(voxel_z)))
 
 # print(coordinates('V4'))
 # plot_fmri_colors('V4')
@@ -122,8 +129,8 @@ print(len(np.unique(voxel_x))*len(np.unique(voxel_y))*len(np.unique(voxel_z)))
 # plot_fmri_colors('FFA')
 # plot_fmri_colors('LOC')
 # plot_fmri_colors('PPA')
-# plot_fmri_colors('VC')
+plot_fmri_colors('VC')
 
-vc_padded=padded_coordinates('VC')
+vc_padded=padded_fmri('VC')
 print(vc_padded.shape)
-print(np.nonzero(vc_padded))
+# print(np.nonzero(vc_padded))
