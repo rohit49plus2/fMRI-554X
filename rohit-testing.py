@@ -38,9 +38,9 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     # print("datatype shape: ", datatype.shape)
     # print("labels shape: ", labels.shape)
     # print("voxel_data shape: ", voxel_data.shape)
-    # i_train = (datatype == 1).flatten()    # Index for training 1200 trials
-    # i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
-    # i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
+    i_train = (datatype == 1).flatten()    # Index for training 1200 trials
+    i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
+    i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
     # print("indexes for imagery:", i_test_im)
     # print("labels unique",np.unique(labels).shape)
     # print("i_train sum",i_train.sum())
@@ -62,15 +62,15 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         voxel_y = subject1.get_metadata('voxel_y', where=area[roi])
         voxel_z = subject1.get_metadata('voxel_z', where=area[roi])
         fig = plt.figure()
-        ax = plt.axes(projection="3d")
 
+        ax = plt.axes(projection="3d")
         plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=subject1.select(rois[roi])[num][:],cmap='coolwarm')
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
         ax.set_title(roi)
-
         fig.colorbar(plot)
+
         plt.show()
 
     def coordinates(roi):
@@ -116,12 +116,42 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
 
         return(pc)
 
-    for roi in rois: #for now only VC later on use rois dictionary from god_config
-        co = coordinates(roi)
-        np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
+    # for roi in rois: #for now only VC later on use rois dictionary from god_config
+    #     co = coordinates(roi)
+    #     np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
+    #
+    #     fmri_padded=padded_fmri(roi)
+    #     np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
 
-        fmri_padded=padded_fmri(roi)
-        np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
+    def plot_average_fmri_colors(roi):
+        """
+        can pass roi as string like 'VC', takes area dictionary from god config
+        plots fmri values in that region for trial number num
+        """
+        voxel_x = subject1.get_metadata('voxel_x', where=area[roi])
+        voxel_y = subject1.get_metadata('voxel_y', where=area[roi])
+        voxel_z = subject1.get_metadata('voxel_z', where=area[roi])
 
-    # plot_fmri_colors('VC',3000)
-    # plot_fmri_colors('VC',1)
+        fmri_seen=np.mean(subject1.select(rois[roi])[i_train+i_test_pt][:],axis=0)
+        fmri_imagined=np.mean(subject1.select(rois[roi])[i_test_im][:],axis=0)
+        fig = plt.figure(figsize=plt.figaspect(0.5))
+
+        ax = fig.add_subplot(1, 2, 1,projection="3d")
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_seen,cmap='coolwarm')
+        ax.set_xlabel('X Axes')
+        ax.set_ylabel('Y Axes')
+        ax.set_zlabel('Z Axes')
+        ax.set_title("Average fmri during seen experiments in " + roi + " of " + subject)
+        fig.colorbar(plot,shrink=0.5)
+
+        ax = fig.add_subplot(1, 2, 2, projection='3d')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_imagined,cmap='coolwarm')
+        ax.set_xlabel('X Axes')
+        ax.set_ylabel('Y Axes')
+        ax.set_zlabel('Z Axes')
+        ax.set_title("Average fmri during imagined experiments in " + roi + " of " + subject)
+        fig.colorbar(plot,shrink=0.5)
+
+        plt.show()
+
+    plot_average_fmri_colors('VC')
