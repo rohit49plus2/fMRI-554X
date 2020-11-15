@@ -64,7 +64,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         fig = plt.figure()
         ax = plt.axes(projection="3d")
 
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,c=subject1.select(rois[roi])[num][:],cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=subject1.select(rois[roi])[num][:],cmap='coolwarm')
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -116,9 +116,12 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
 
         return(pc)
 
-    for roi in {'VC' : 'ROI_VC = 1'}: #for now only VC later on use rois dictionary from god_config
+    for roi in rois: #for now only VC later on use rois dictionary from god_config
         co = coordinates(roi)
         np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
 
         fmri_padded=padded_fmri(roi)
         np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
+
+    # plot_fmri_colors('VC',3000)
+    # plot_fmri_colors('VC',1)
