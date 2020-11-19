@@ -1,0 +1,11 @@
+CV accuracy:  0.08462643678160922
+Best Parameters:  {'max_depth': 3, 'max_features': 5, 'n_estimators': 100}
+[[0 0 1 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ ...
+ [1 1 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]
+ [0 0 0 ... 0 0 0]]
+accuracy 0.022
+precision 0.022
