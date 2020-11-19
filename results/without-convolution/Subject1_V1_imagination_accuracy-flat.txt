@@ -1,0 +1,5 @@
+Base Accuracy: V1 0.855072463768116
+[[597   0]
+ [  0  93]]
+accuracy 1.0
+precision 1.0

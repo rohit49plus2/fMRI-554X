@@ -38,6 +38,17 @@ from tensorflow.keras.layers import Dense, Conv3D, Dropout, Flatten, MaxPooling3
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.backend import clear_session
 
+def get_averaged_feature(pred_y, true_y, labels):
+    '''Return category-averaged features'''
+
+    labels_set = np.unique(labels)
+
+    pred_y_av = np.array([np.mean(pred_y[labels == c, :], axis=0) for c in labels_set])
+    true_y_av = np.array([np.mean(true_y[labels == c, :], axis=0) for c in labels_set])
+
+    return pred_y_av, true_y_av, labels_set
+
+
 #feature prediction Function
 def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
     '''Run feature prediction
@@ -63,8 +74,9 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
 
     n_unit = y_train.shape[1]
 
-    X=np.load(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri'+'.npy')
-    X=X.reshape(X.shape[0],X.shape[1],X.shape[2],X.shape[3],1)
+    subject1=bdpy.BData(subjects[subject])
+    X=subject1.select(rois[roi])
+    del subject1
 
     input_shape=X.shape
 
@@ -106,12 +118,7 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
 
         def create_model():
             model = Sequential()
-            model.add(Conv3D(8,3,activation='relu',input_shape=input_shape[1:]))
-            model.add(Conv3D(16,2,activation='relu'))
-            model.add(MaxPooling3D(pool_size = (2, 2, 2)))
-            model.add(Dropout(0.6))
-            model.add(Flatten())
-            model.add(Dense(128, activation = 'relu'))
+            model.add(Dense(128, activation = 'relu',input_dim=input_shape[1]))
             model.add(Dropout(0.9))
             model.add(Dense(1, activation='softmax'))
             model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -130,8 +137,8 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
         print('Time: %.3f sec' % (time() - start_time))
 
     # Create numpy arrays for return values
-    y_predicted = np.vstack(y_pred_list).T
-    y_true = np.vstack(y_true_list).T
+    y_predicted = np.array(y_pred_list).reshape(-1,n_unit)
+    y_true = np.array(y_true_list).reshape(-1,n_unit)
 
     return y_predicted, y_true
 
@@ -149,9 +156,17 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
     i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
     i_test=i_test_im + i_test_pt
-    for roi in {'VC'}:
-        for feat in ['cnn8']:
+    for roi in rois:
+        for feat in features:
+            # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
             y = image_features.select(feat)             # Image features
+            from sklearn.decomposition import IncrementalPCA
+            print('Shape of y before PCA:', y.shape)
+            ipca = IncrementalPCA(n_components=5, batch_size=120)
+            ipca.fit(y)
+            y=ipca.transform(y)
+            print('Shape of y after PCA:', y.shape)
+
             y_label = image_features.select('ImageID')  # Image labels
 
             y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
@@ -161,6 +176,13 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
 
             # Feature prediction
             pred_y, true_y = feature_prediction(subject, roi, y_train, y_test)
+
+
+            i_pt = i_test_pt[i_test]  # Index for perception test within test
+            i_im = i_test_im[i_test]  # Index for imagery test within test
+
+            print(pred_y.shape)
+            print(i_pt.shape)
 
             pred_y_pt = pred_y[i_pt, :]
             pred_y_im = pred_y[i_im, :]
@@ -182,13 +204,12 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
             y_catlabels = image_features.select('CatID')   # Category labels in image features
             ind_catave = (image_features.select('FeatureType') == 3).flatten()
 
-            del image_features
 
             y_catave_pt = get_refdata(y[ind_catave, :], y_catlabels[ind_catave, :], catlabels_set_pt)
             y_catave_im = get_refdata(y[ind_catave, :], y_catlabels[ind_catave, :], catlabels_set_im)
 
             # Prepare result dataframe
-            results = pd.DataFrame({'subject' : [sbj, sbj],
+            results = pd.DataFrame({'subject' : [subject, subject],
                                     'roi' : [roi, roi],
                                     'feature' : [feat, feat],
                                     'test_type' : ['perception', 'imagery'],
@@ -201,8 +222,17 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
                                     'category_label_set' : [catlabels_set_pt, catlabels_set_im],
                                     'category_feature_averaged' : [y_catave_pt, y_catave_im]})
 
-            res=dir_path+'/data/'+subject+'_'+roi+'_'+'image_results.pkl'
+            # print('catlabels_set_pt size',catlabels_set_pt.shape)
+            # print('catlabels_set_im size',catlabels_set_im.shape)
+            # print('true_y_pt_av size',true_y_pt_av.shape)
+            # print('true_y_im_av size',true_y_im_av.shape)
+            # print('pred_y_pt_av size',pred_y_pt_av.shape)
+            # print('pred_y_im_av size',pred_y_im_av.shape)
+            # print('y_catave_pt size',y_catave_pt.shape)
+            # print('y_catave_im size',y_catave_im.shape)
+            res=dir_path+'/results/feature-decoding/'+subject+'_'+roi+'_'+feat+'_'+'decode_results.pkl'
             makedir_ifnot(os.path.dirname(res))
+
             with open(res, 'wb') as f:
                 pickle.dump(results, f)
 
