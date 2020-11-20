@@ -66,6 +66,8 @@ def main():
             y=ipca.transform(y)
             print('Shape of y after PCA:', y.shape)
             print(y.shape)
+        else:
+            y = y[:, :100]#take 100 features for time constraint
 
         feat_other = y[ind_cat_other, :]
 

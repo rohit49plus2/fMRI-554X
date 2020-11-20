@@ -170,6 +170,9 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
             ipca.fit(y)
             y=ipca.transform(y)
             print('Shape of y after PCA:', y.shape)
+        else:
+            y = y[:, :100]#take 100 features for time constraint
+
         y_label = image_features.select('ImageID')  # Image labels
 
         y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
