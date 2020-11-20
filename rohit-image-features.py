@@ -147,6 +147,9 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
 
+pca=False #whether or not pca
+
+
 for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for now only subject1, later on replace with subjects dictionary from god_config
     #Load image features
     image_features=bdpy.BData(image_feature_file)
@@ -160,12 +163,13 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     for feat in features:
         # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
         y = image_features.select(feat)             # Image features
-        from sklearn.decomposition import IncrementalPCA
-        print('Shape of y before PCA:', y.shape)
-        ipca = IncrementalPCA(n_components=20, batch_size=20)
-        ipca.fit(y)
-        y=ipca.transform(y)
-        print('Shape of y after PCA:', y.shape)
+        if pca:
+            from sklearn.decomposition import IncrementalPCA
+            print('Shape of y before PCA:', y.shape)
+            ipca = IncrementalPCA(n_components=20, batch_size=20)
+            ipca.fit(y)
+            y=ipca.transform(y)
+            print('Shape of y after PCA:', y.shape)
         y_label = image_features.select('ImageID')  # Image labels
 
         y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
@@ -231,7 +235,10 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
             # print('pred_y_im_av size',pred_y_im_av.shape)
             # print('y_catave_pt size',y_catave_pt.shape)
             # print('y_catave_im size',y_catave_im.shape)
-            res=dir_path+'/results/feature-decoding/'+subject+'_'+roi+'_'+feat+'_'+'decode_results.pkl'
+            if pca:
+                res=dir_path+'/results/feature-decoding-pca/'+subject+'_'+roi+'_'+feat+'_'+'decode_results.pkl'
+            else:
+                res=dir_path+'/results/feature-decoding/'+subject+'_'+roi+'_'+feat+'_'+'decode_results.pkl'
             makedir_ifnot(os.path.dirname(res))
 
             with open(res, 'wb') as f:

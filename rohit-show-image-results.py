@@ -2,8 +2,12 @@ import os
 import pickle
 import pandas as pd
 import numpy as np
+from rohit-image-features import pca
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
-output_file = dir_path+'/results/feature-decoding-final/results.pkl'
+if pca:
+    output_file = dir_path+'/results/feature-decoding-pca-final/results.pkl'
+else:
+    output_file = dir_path+'/results/feature-decoding-final/results.pkl'
 with open(output_file, 'rb') as f:
     results = pickle.load(f)
 print('Loaded %s' % output_file)

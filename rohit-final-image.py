@@ -18,12 +18,16 @@ from bdpy.stats import corrmat
 
 import god_config as config
 from sklearn.decomposition import IncrementalPCA
-
+from rohit-image-features import pca
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
 def main():
-    results_file = dir_path+'/results/feature-decoding-merge/results.pkl'
-    output_file = dir_path+'/results/feature-decoding-final/results.pkl'
+    if pca:
+        results_file = dir_path+'/results/feature-decoding-pca-merge/results.pkl'
+        output_file = dir_path+'/results/feature-decoding-pca-final/results.pkl'
+    else:
+        results_file = dir_path+'/results/feature-decoding-merge/results.pkl'
+        output_file = dir_path+'/results/feature-decoding-final/results.pkl'
 
     image_feature_file = config.image_feature_file
 
@@ -55,12 +59,13 @@ def main():
                                              pred_percept, pred_imagery):
 
         y = data_feature.select(f)
-        print('Shape of y before PCA:', y.shape)
-        ipca = IncrementalPCA(n_components=20, batch_size=20)
-        ipca.fit(y)
-        y=ipca.transform(y)
-        print('Shape of y after PCA:', y.shape)
-        print(y.shape)
+        if pca:
+            print('Shape of y before PCA:', y.shape)
+            ipca = IncrementalPCA(n_components=20, batch_size=20)
+            ipca.fit(y)
+            y=ipca.transform(y)
+            print('Shape of y after PCA:', y.shape)
+            print(y.shape)
 
         feat_other = y[ind_cat_other, :]
 

@@ -14,12 +14,16 @@ from bdpy.stats import corrcoef
 
 import god_config as config
 
-
+from rohit-image-features import pca
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
 def main():
-    results_dir = dir_path+'/results/feature-decoding/'
-    output_file = dir_path+'/results/feature-decoding-merge/results.pkl'
+    if pca:
+        results_dir = dir_path+'/results/feature-decoding-pca/'
+        output_file = dir_path+'/results/feature-decoding-pca-merge/results.pkl'
+    else:
+        results_dir = dir_path+'/results/feature-decoding/'
+        output_file = dir_path+'/results/feature-decoding-merge/results.pkl'
 
     # Load results -----------------------------------------------------
     result_list = []
