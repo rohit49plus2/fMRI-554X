@@ -29,7 +29,7 @@ from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import Pipeline
 
 
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, normalize
 
 import tensorflow as tf
 from tensorflow import keras
@@ -85,7 +85,6 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
 
     y_true_list = []
     y_pred_list = []
-
     for i in range(n_unit):
 
         print('Unit %03d' % (i + 1))
@@ -119,7 +118,7 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
         def create_model():
             model = Sequential()
             model.add(Dense(128, activation = 'relu',input_dim=input_shape[1]))
-            model.add(Dropout(0.9))
+            model.add(Dropout(0.5))
             model.add(Dense(1, activation='softmax'))
             model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
             return model
@@ -130,15 +129,17 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
         y_pred = model.predict(X_test)
         # Denormalize predicted features
         y_pred = y_pred * norm_scale_y + norm_mean_y
-
+        y_pred=y_pred.ravel()
         y_true_list.append(y_test_unit)
         y_pred_list.append(y_pred)
 
         print('Time: %.3f sec' % (time() - start_time))
 
     # Create numpy arrays for return values
-    y_predicted = np.array(y_pred_list).reshape(-1,n_unit)
-    y_true = np.array(y_true_list).reshape(-1,n_unit)
+    # print(y_pred_list)
+    # print(np.vstack(y_pred_list).shape)
+    y_predicted = np.vstack(y_pred_list).T
+    y_true = np.vstack(y_true_list).T
 
     return y_predicted, y_true
 
@@ -156,23 +157,23 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
     i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
     i_test=i_test_im + i_test_pt
-    for roi in rois:
-        for feat in features:
-            # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
-            y = image_features.select(feat)             # Image features
-            from sklearn.decomposition import IncrementalPCA
-            print('Shape of y before PCA:', y.shape)
-            ipca = IncrementalPCA(n_components=5, batch_size=120)
-            ipca.fit(y)
-            y=ipca.transform(y)
-            print('Shape of y after PCA:', y.shape)
+    for feat in features:
+        # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
+        y = image_features.select(feat)             # Image features
+        from sklearn.decomposition import IncrementalPCA
+        print('Shape of y before PCA:', y.shape)
+        ipca = IncrementalPCA(n_components=20, batch_size=20)
+        ipca.fit(y)
+        y=ipca.transform(y)
+        print('Shape of y after PCA:', y.shape)
+        y_label = image_features.select('ImageID')  # Image labels
 
-            y_label = image_features.select('ImageID')  # Image labels
+        y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
 
-            y_sorted = get_refdata(y, y_label, labels)  # Image features corresponding to brain data
+        y_train = y_sorted[i_train, :]
+        y_test = y_sorted[i_test, :]
 
-            y_train = y_sorted[i_train, :]
-            y_test = y_sorted[i_test, :]
+        for roi in rois:
 
             # Feature prediction
             pred_y, true_y = feature_prediction(subject, roi, y_train, y_test)
