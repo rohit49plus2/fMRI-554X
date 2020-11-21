@@ -5,7 +5,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 analysis_name = 'GenericObjectDecoding'
-
+pca=False #whether or not pca
 # Data settings
 subjects = {'Subject1' : dir_path+'/original code/data/Subject1.h5',
             'Subject2' : dir_path+'/original code/data/Subject2.h5',

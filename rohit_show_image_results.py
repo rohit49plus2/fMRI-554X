@@ -2,8 +2,11 @@ import os
 import pickle
 import pandas as pd
 import numpy as np
-from rohit-image-features import pca
+from god_config import pca
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
+pd.set_option('display.max_columns', None)  # or 1000
+pd.set_option('display.max_rows', None)  # or 1000
+pd.set_option('display.max_colwidth', -1)
 if pca:
     output_file = dir_path+'/results/feature-decoding-pca-final/results.pkl'
 else:
@@ -18,6 +21,5 @@ tb_pt = pd.pivot_table(results, index=['roi'], columns=['feature'],
 tb_im = pd.pivot_table(results, index=['roi'], columns=['feature'],
                      values=['catident_correct_rate_imagery'], aggfunc=np.mean)
 
-from tabulate import tabulate
-print(tabulate(tb_pt))
-print(tabulate(tb_im))
+print(tb_pt)
+print(tb_im)

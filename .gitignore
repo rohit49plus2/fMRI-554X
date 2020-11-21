@@ -1,4 +1,3 @@
 #ignore data files that can be downloaded separately
 *.h5
 *.npy
-*.pkl

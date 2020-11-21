@@ -147,8 +147,6 @@ def feature_prediction(subject, roi, y_train, y_test, n_voxel=500, n_iter=200):
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
 
-pca=False #whether or not pca
-
 
 for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for now only subject1, later on replace with subjects dictionary from god_config
     #Load image features
@@ -160,7 +158,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
     i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
     i_test=i_test_im + i_test_pt
-    for feat in  ['cnn8', 'hmax1', 'hmax2', 'hmax3', 'gist', 'sift']:
+    for feat in  features:
         # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
         y = image_features.select(feat)             # Image features
         if pca:

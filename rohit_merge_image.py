@@ -12,9 +12,7 @@ import pandas as pd
 import bdpy
 from bdpy.stats import corrcoef
 
-import god_config as config
-
-from rohit-image-features import pca
+from god_config import *
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
 def main():

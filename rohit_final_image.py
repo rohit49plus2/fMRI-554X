@@ -18,9 +18,13 @@ from bdpy.stats import corrmat
 
 import god_config as config
 from sklearn.decomposition import IncrementalPCA
-from rohit-image-features import pca
+pca=config.pca
 # Main #################################################################
 dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
+pd.set_option('display.max_columns', None)  # or 1000
+pd.set_option('display.max_rows', None)  # or 1000
+pd.set_option('display.max_colwidth', -1)
+
 def main():
     if pca:
         results_file = dir_path+'/results/feature-decoding-pca-merge/results.pkl'
@@ -100,11 +104,8 @@ def main():
     tb_im = pd.pivot_table(results, index=['roi'], columns=['feature'],
                            values=['catident_correct_rate_imagery'], aggfunc=np.mean)
 
-    from tabulate import tabulate
     print(tb_pt)
     print(tb_im)
-    print(tabulate(tb_pt))
-    print(tabulate(tb_im))
 
 
 # Functions ############################################################
