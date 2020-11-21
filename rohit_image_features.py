@@ -160,7 +160,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     i_test_pt = (datatype == 2).flatten()  # Index for perception test 35 runs of 50 images = 1750
     i_test_im = (datatype == 3).flatten()  # Index for imagery test 20 runs of 25 images
     i_test=i_test_im + i_test_pt
-    for feat in features:
+    for feat in  ['cnn8', 'hmax1', 'hmax2', 'hmax3', 'gist', 'sift']:
         # f=open(dir_path+'/results/feature-decoding/texts/'+subject+'_'+roi+'_'+feat+'_'+'feature-decoding'+'.txt','w')
         y = image_features.select(feat)             # Image features
         if pca:
@@ -180,7 +180,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         y_train = y_sorted[i_train, :]
         y_test = y_sorted[i_test, :]
 
-        for roi in rois:
+        for roi in ['VC']:
 
             # Feature prediction
             pred_y, true_y = feature_prediction(subject, roi, y_train, y_test)
@@ -247,4 +247,4 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
             with open(res, 'wb') as f:
                 pickle.dump(results, f)
 
-            print('Saved %s' % results_file)
+            print('Saved %s' % res)
