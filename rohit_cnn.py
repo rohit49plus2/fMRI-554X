@@ -25,8 +25,10 @@ from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.backend import clear_session
 
 for subject in {'Subject1'}: #for now only subject1, later on replace with subjects dictionary from god_config
-    for roi in {'PPA'}:
-        f=open(dir_path+'/results/'+subject+'_'+roi+'_'+'imagination_accuracy'+'.txt','w')
+    for roi in rois:
+        if not os.path.exists(dir_path+'/results/cnn1/'):
+            os.makedirs(dir_path+'/results/cnn1/')
+        f=open(dir_path+'/results/cnn1/'+subject+'_'+roi+'_'+'imagination_accuracy'+'.txt','w')
         X=np.load(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri'+'.npy')
         datatype=np.load(dir_path+'/data/'+subject+'_'+'datatype'+'.npy')
         X=X.reshape(X.shape[0],X.shape[1],X.shape[2],X.shape[3],1)
@@ -47,54 +49,58 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         accuracy1 = accuracy_score(y, y_pred)
         print('Base Accuracy: ' + roi ,accuracy1,file=f)
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=2)
-        over = SMOTE(random_state=2)
-        under = RandomUnderSampler(random_state=2)
-        steps = [('o', over), ('u', under)]
-        pipeline = Pipeline(steps=steps)
-        # transform the dataset
-        print("Before SMOLE",X_train.shape)
-        X_train=X_train.reshape(X_train.shape[0],-1)
-        X_train, y_train = pipeline.fit_resample(X_train, y_train)
-        X_train = X_train.reshape((-1,input_shape[1],input_shape[2],input_shape[3],input_shape[4]))
-        print("After SMOLE",X_train.shape)
+        cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=2)
 
-        ohe=OneHotEncoder()
-        y_train=ohe.fit_transform(y_train.reshape(-1,1)).toarray()
+        conf_matrix_list_of_arrays = []
+        scores=[]
+        for train_index, test_index in cv.split(X, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            over = SMOTE(random_state=2)
+            under = RandomUnderSampler(random_state=2)
+            steps = [('o', over), ('u', under)]
+            pipeline = Pipeline(steps=steps)
+            # transform the dataset
+            # print("Before SMOLE",X_train.shape)
+            X_train=X_train.reshape(X_train.shape[0],-1)
+            X_train, y_train = pipeline.fit_resample(X_train, y_train)
+            X_train = X_train.reshape((-1,input_shape[1],input_shape[2],input_shape[3],input_shape[4]))
+            # print("After SMOLE",X_train.shape)
+
+            ohe=OneHotEncoder()
+            y_train=ohe.fit_transform(y_train.reshape(-1,1)).toarray()
 
 
-        def create_model():
-            model = Sequential()
-            model.add(Conv3D(8,3,activation='relu',input_shape=input_shape[1:]))
-            model.add(Conv3D(16,2,activation='relu'))
-            model.add(MaxPooling3D(pool_size = (2, 2, 2)))
-            model.add(Dropout(0.6))
-            model.add(Flatten())
-            model.add(Dense(128, activation = 'relu'))
-            model.add(Dropout(0.9))
-            model.add(Dense(2, activation='softmax'))
-            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-            return model
+            def create_model():
+                model = Sequential()
+                model.add(Conv3D(8,3,activation='relu',input_shape=input_shape[1:]))
+                model.add(Conv3D(16,2,activation='relu'))
+                model.add(MaxPooling3D(pool_size = (2, 2, 2)))
+                model.add(Dropout(0.6))
+                model.add(Flatten())
+                model.add(Dense(128, activation = 'relu'))
+                model.add(Dropout(0.9))
+                model.add(Dense(2, activation='softmax'))
+                model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+                return model
 
-        model = create_model()
+            model = create_model()
 
-        model.fit(X_train,y_train,epochs=3,verbose=0)
-        y_pred = model.predict(X_test)
+            model.fit(X_train,y_train,epochs=3,verbose=0)
+            y_pred = model.predict(X_test)
 
-        #Converting predictions to label
-        pred = list()
-        for i in range(len(y_pred)):
-            pred.append(np.argmax(y_pred[i]))
+            #Converting predictions to label
+            pred = list()
+            for i in range(len(y_pred)):
+                pred.append(np.argmax(y_pred[i]))
 
-        print(confusion_matrix(y_true=y_test, y_pred=pred),file=f)
-        print("accuracy", accuracy_score(y_test, pred),file=f)
-        print("precision", precision_score(y_test, pred,average='micro'),file=f)
+            conf_matrix = confusion_matrix(y_test, pred)
+            conf_matrix_list_of_arrays.append(conf_matrix)
+            score=accuracy_score(y_test, pred)
+            scores.append(score)
+
+        mean_of_conf_matrix_arrays = np.mean(conf_matrix_list_of_arrays, axis=0)
+        print(mean_of_conf_matrix_arrays,file=f)
+        print('Accuracy: %.7f (%.7f)' % (np.mean(scores), np.std(scores)),file=f)
+
         f.close()
-
-        # cv = RepeatedStratifiedKFold(n_splits=8, n_repeats=10, random_state=2)
-        # parameters = {'epochs':[10,20,30]
-        # }
-        # clf = GridSearchCV(model, parameters,cv=cv,n_jobs=4)
-        # clf.fit(X,y)
-        # print('Accuracy: ', clf.best_score_,file=f)
-        # print('Best Parameters: ', clf.best_params_,file=f)

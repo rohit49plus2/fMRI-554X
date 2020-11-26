@@ -1,0 +1,32 @@
+from sklearn.model_selection import RepeatedStratifiedKFold
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__)) #current directory
+f=open(dir_path+'/results/liam-2/'+subject+'_'+roi+'_'+'imagination_accuracy-cnn2'+'.txt','w')
+cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=2)
+conf_matrix_list_of_arrays = []
+scores=[]
+for train_index, test_index in cv.split(X, y):
+    X_train, X_test = X[train_index], X[test_index]
+    y_train, y_test = y[train_index], y[test_index]
+    over = SMOTE(random_state=2)
+    under = RandomUnderSampler(random_state=2)
+    steps = [('o', over), ('u', under)]
+    pipeline = Pipeline(steps=steps)
+
+
+    YOUR SMOTE HERE ON X_train and y_train only, not test
+
+    YOUR MODEL HERE
+
+    STORE ACCURACIES AND CONFUSION MATRIX IN these
+
+    conf_matrix = confusion_matrix(y_test, pred)
+    conf_matrix_list_of_arrays.append(conf_matrix)
+    score=accuracy_score(y_test, pred)
+    scores.append(score)
+
+mean_of_conf_matrix_arrays = np.mean(conf_matrix_list_of_arrays, axis=0)
+print(mean_of_conf_matrix_arrays,file=f)
+print('Accuracy: %.7f (%.7f)' % (np.mean(scores), np.std(scores)),file=f)
+
+f.close()
