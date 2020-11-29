@@ -25,14 +25,12 @@ from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from tensorflow.keras.backend import clear_session
 
 for subject in {'Subject1'}: #for now only subject1, later on replace with subjects dictionary from god_config
-    for roi in rois:
+    for roi in ['VC']:
         if not os.path.exists(dir_path+'/results/neural-network/'):
             os.makedirs(dir_path+'/results/neural-network/')
-        f=open(dir_path+'/results/neural-network/'+subject+'_'+roi+'_'+'imagination_accuracy-flat'+'.txt','w')
-        subject_fmri=bdpy.BData(subjects[subject])
-        X=subject_fmri.select(rois[roi])
-        del subject_fmri
-        datatype=np.load(dir_path+'/data/'+subject+'_'+'datatype'+'.npy')
+        f=open(dir_path+'/results/neural-network-all-subjects/'+subject+'_'+roi+'_'+'imagination_accuracy-flat'+'.txt','w')
+        X = np.load(dir_path+'/padded_data/VC.npy')
+        datatype=np.load(dir_path+'/padded_data/datatype.npy')
 
         input_shape=X.shape
 

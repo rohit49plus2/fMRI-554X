@@ -17,13 +17,6 @@ from imblearn.under_sampling import RandomUnderSampler
 from imblearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder,MinMaxScaler
 
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Conv3D, Dropout, Flatten, MaxPooling3D
-from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
-from tensorflow.keras.backend import clear_session
-
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 
@@ -59,8 +52,8 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=3)
 
-        true_im=X_train[y_train==0]
-        true_pt=X_train[y_train==1]
+        true_im=X_train[y_train==1]
+        true_pt=X_train[y_train==0]
 
         over = SMOTE(random_state=2)
         under = RandomUnderSampler(random_state=2)
@@ -73,33 +66,8 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         X_train = X_train.reshape((-1,input_shape[1]))
         print("After SMOLE",X_train.shape)
 
-        smote_im=X_train[y_train==0]
-        smote_pt=X_train[y_train==1]
-
-        ohe=OneHotEncoder()
-        y_train=ohe.fit_transform(y_train.reshape(-1,1)).toarray()
-
-
-        def create_model():
-            model = Sequential()
-            model.add(Dense(128, activation = 'relu',input_dim=input_shape[1]))
-            model.add(Dropout(0.9))
-            model.add(Dense(2, activation='softmax'))
-            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-            return model
-
-        model = create_model()
-
-        model.fit(X_train,y_train,epochs=10,verbose=0)
-        y_pred = model.predict(X_test)
-
-        #Converting predictions to label
-        pred = list()
-        for i in range(len(y_pred)):
-            pred.append(np.argmax(y_pred[i]))
-
-        print(confusion_matrix(y_true=y_test, y_pred=pred))
-        print("accuracy", accuracy_score(y_test, pred))
+        smote_im=X_train[y_train==1]
+        smote_pt=X_train[y_train==0]
 
         smote_av = np.mean(X_train,axis=0)
         smote_im_av = np.mean(smote_im,axis=0)
