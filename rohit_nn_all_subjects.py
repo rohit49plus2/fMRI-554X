@@ -31,6 +31,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         f=open(dir_path+'/results/neural-network-all-subjects/'+subject+'_'+roi+'_'+'imagination_accuracy-flat'+'.txt','w')
         X = np.load(dir_path+'/padded_data/VC.npy')
         datatype=np.load(dir_path+'/padded_data/datatype.npy')
+        X=X.flatten()
 
         input_shape=X.shape
 
