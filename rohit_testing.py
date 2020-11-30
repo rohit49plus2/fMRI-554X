@@ -131,7 +131,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         fig = plt.figure(figsize=plt.figaspect(0.5))
 
         ax = fig.add_subplot(1, 2, 1,projection="3d")
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_seen,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_seen,cmap='coolwarm',vmin=-0.8,vmax=+0.8)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -139,7 +139,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         fig.colorbar(plot,shrink=0.5)
 
         ax = fig.add_subplot(1, 2, 2, projection='3d')
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_imagined,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=fmri_imagined,cmap='coolwarm',vmin=-8,vmax=+8)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -149,9 +149,9 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
         plt.show()
 
     plot_average_fmri_colors('VC')
-    for roi in rois: #for now only VC later on use rois dictionary from god_config
-        co = coordinates(roi)
-        np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
-
-        fmri_padded=padded_fmri(roi)
-        np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
+    # for roi in rois: #for now only VC later on use rois dictionary from god_config
+    #     co = coordinates(roi)
+    #     np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
+    #
+    #     fmri_padded=padded_fmri(roi)
+    #     np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
