@@ -135,7 +135,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     seen = absavgdata[Y==0]
     imagined = absavgdata[Y==1]
 
-    bins = np.linspace(0,2.5,1000)
+    bins = np.linspace(1.2,2.2,100)
 
     fig,ax1 = plt.subplots()
     ax1.hist(seen, bins, alpha = 0.6, color = 'c', label = "Seen")
