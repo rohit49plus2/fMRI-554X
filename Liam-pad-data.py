@@ -85,17 +85,17 @@ def pad_data(roi):
     return padded_data
 
 if __name__ == "__main__":
-#     for roi in config.rois:
-#         print ("Padding ROI:",roi,"for all subjects") 
-#         datatype = np.array([])
-#         for subject in config.subjects:
-#             subject_data = bdpy.BData(config.subjects[subject])
-#             datatype = np.append(datatype,subject_data.select('DataType'))
-#         np.save(dir_path+'/padded_data/'+'datatype',datatype)
-#         padded_data = pad_data(roi)
-#         np.save(dir_path+'/padded_data/'+roi, padded_data)
-    padded_data = pad_data('VC')
-    np.save(dir_path+'/padded_data/VC', padded_data)
+    for roi in config.rois:
+        print ("Padding ROI:",roi,"for all subjects") 
+        datatype = np.array([])
+        for subject in config.subjects:
+            subject_data = bdpy.BData(config.subjects[subject]) 
+            datatype = np.append(datatype,subject_data.select('DataType'))
+            np.save(dir_path+'/padded_data/'+'datatype',datatype)
+            padded_data = pad_data(roi)
+            np.save(dir_path+'/padded_data/'+roi, padded_data)
+#    padded_data = pad_data('VC')
+#    np.save(dir_path+'/padded_data/VC', padded_data)
                   
                   
                   
