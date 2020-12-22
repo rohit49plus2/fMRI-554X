@@ -81,7 +81,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         fig = plt.figure(figsize =(2, 3))
 
         ax = fig.add_subplot(2, 3, 1,projection="3d")
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_av,cmap='coolwarm',vmin=-10,vmax=+10)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -89,7 +89,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         fig.colorbar(plot,shrink=1)
 
         ax = fig.add_subplot(2, 3, 2,projection="3d")
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_pt_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_pt_av,cmap='coolwarm',vmin=-0.8,vmax=+0.8)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -97,7 +97,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         fig.colorbar(plot,shrink=1)
 
         ax = fig.add_subplot(2, 3, 3,projection="3d")
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_im_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=true_im_av,cmap='coolwarm',vmin=-10,vmax=+10)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -105,7 +105,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
         fig.colorbar(plot,shrink=1)
 
         ax = fig.add_subplot(2, 3, 4, projection='3d')
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_av,cmap='coolwarm',vmin=-10,vmax=+10)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -114,7 +114,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
 
 
         ax = fig.add_subplot(2, 3, 5, projection='3d')
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_pt_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_pt_av,cmap='coolwarm',vmin=-0.8,vmax=+0.8)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')
@@ -123,7 +123,7 @@ for subject in {'Subject1'}: #for now only subject1, later on replace with subje
 
 
         ax = fig.add_subplot(2, 3, 6, projection='3d')
-        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_im_av,cmap='coolwarm')
+        plot=ax.scatter(voxel_x,voxel_y,voxel_z,s=20,c=smote_im_av,cmap='coolwarm',vmin=-10,vmax=+10)
         ax.set_xlabel('X Axes')
         ax.set_ylabel('Y Axes')
         ax.set_zlabel('Z Axes')

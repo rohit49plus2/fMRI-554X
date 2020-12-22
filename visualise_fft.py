@@ -85,7 +85,8 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     all_fmri=subject1.select(rois[roi])
     X=[]
     Y=[]
-    for i in range(len(datatype)):
+    # for i in range(len(datatype)):
+    for i in range(6):
         print(i)
         if datatype[i]==3:
             Y.append(1)
@@ -110,10 +111,51 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     imagined = absavgdata[Y==1]
     pc=np.average(seen,axis=0)
     pc2=np.average(imagined,axis=0)
+    from matplotlib.colors import LinearSegmentedColormap
+    # cdict3 = {'red':  ((0.0, 0.0, 0.0),
+    #                    (0.25, 0.0, 0.0),
+    #                    (0.5, 0.0, 0.0),
+    #                    (0.75, 0.0, 0.0),
+    #                    (1.0, 0.0, 0.0)),
+    #
+    #          'green': ((0.0, 0.0, 0.0),
+    #                    (0.0, 0.0, 0.0),
+    #                    (0.0, 0.0, 0.0),
+    #                    (0.0, 0.0, 0.0),
+    #                    (1.0, 0.0, 0.0)),
+    #
+    #          'blue':  ((0.0, 0.0, 0.0),
+    #                    (0.25, 0.0, 0.0),
+    #                    (0.5, 0.0, 0.0),
+    #                    (0.75, 0.0, 0.0),
+    #                    (1.0, 0.0, 0.0))
+    #         }
+
+    # # Make a modified version of cdict3 with some transparency
+    # # in the middle of the range.
+    # cdict4 = cdict3.copy()
+    # cdict4['alpha'] = ((0.0, 1.0, 1.0),
+    #                 #   (0.25,1.0, 1.0),
+    #                    (0.5, 0.3, 0.3),
+    #                 #   (0.75,1.0, 1.0),
+    #                    (1.0, 1.0, 1.0))
+    #
+    # blue_red = LinearSegmentedColormap('BlueRed', cdict4)
+    ncolors=256
+    color_array = plt.get_cmap('coolwarm')(range(ncolors))
+
+    # change alpha values
+    color_array[:,-1] = np.linspace(1.0,0.0,ncolors)
+
+    # create a colormap object
+    map_object = LinearSegmentedColormap.from_list(name='rainbow_alpha',colors=color_array)
+
+    # register this new colormap with matplotlib
+    plt.register_cmap(cmap=map_object)
 
     fig = plt.figure(figsize=plt.figaspect(0.5))
     ax = fig.add_subplot(1, 2, 1,projection="3d")
-    plot=ax.scatter(xx.flatten(),yy.flatten(),zz.flatten(),s=20,c=pc,cmap='coolwarm',vmin=-20,vmax=+20)
+    plot=ax.scatter(xx.flatten(),yy.flatten(),zz.flatten(),s=20,c=pc,cmap='rainbow_alpha',vmin=-20,vmax=+20)
     ax.set_xlabel('X Axes')
     ax.set_ylabel('Y Axes')
     ax.set_zlabel('Z Axes')
@@ -121,7 +163,7 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
     fig.colorbar(plot,shrink=0.5)
 
     ax = fig.add_subplot(1, 2, 2, projection='3d')
-    plot=ax.scatter(xx.flatten(),yy.flatten(),zz.flatten(),s=20,c=pc2,cmap='coolwarm',vmin=-20,vmax=+20)
+    plot=ax.scatter(xx.flatten(),yy.flatten(),zz.flatten(),s=20,c=pc2,cmap='rainbow_alpha',vmin=-20,vmax=+20)
     ax.set_xlabel('X Axes')
     ax.set_ylabel('Y Axes')
     ax.set_zlabel('Z Axes')
