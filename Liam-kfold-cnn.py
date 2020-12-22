@@ -40,8 +40,27 @@ class fmriNet(nn.Module):
             nn.BatchNorm3d(8),
             nn.ReLU())
         #conv4 changes data to object of size 20 x 13 x 9
+        #VC
+        #nn.Conv3d(8, 16, (7,5,4), stride = (2,2,2)),
+        #V1 20,18,16 -> 20,9,7
+        #nn.Conv3d(8,16,(1,2,4), stride = (1,2,2)),
+        #V2 24,20,21 -> 12,10,9
+        #nn.Conv3d(8,16,(2,2,5), stride = (2,2,2)),
+        #V3 28,22,21 -> 14,11,9
+        #nn.Conv3d(8,16,(2,2,5), stride = (2,2,2)),
+        #V4 31,21,9 -> 15,10,9
+        #nn.Conv3d(8,16,(3,3,1), stride = (2,2,1)),
+        #PPA 29,15,11 -> 14,15,11
+        #nn.Conv3d(8,16,(3,1,1), stride = (2,1,1)),
+        #LVC 28,22,21 -> 14,11,9
+        #nn.Conv3d(8,16,(2,2,5), stride = (2,2,2)),
+        #LOC 43,20,15 -> 21,10,15
+        #nn.Conv3d(8,16,(3,2,1), stride = (2,2,1)),
+        #HVC 45,26,17 -> 20,13,8
+        #nn.Conv3d(8,16,(7,2,3), stride = (2,2,2)),
+        #FFA 40,20,13 -> 20,10,13
         self.conv4 = nn.Sequential(
-            nn.Conv3d(8, 16, (7,5,4), stride = (2,2,2)),
+            nn.Conv3d(8,16,(2,2,1), stride = (2,2,1)),
             nn.BatchNorm3d(16),
             nn.ReLU())
         
@@ -60,8 +79,27 @@ class fmriNet(nn.Module):
             nn.ReLU())
         
         #conv8 changes data to object of size 7 x 5 x 4
+        #VC
+        #nn.Conv3d(16, 32, (8,5,3), stride = (2,2,2)), #VC
+        #V1 20,9,7 -> 7,5,4
+        #nn.Conv3d(16,32,(8,1,1), stride = (2,2,2)),
+        #V2 12,10,9 -> 7,5,4
+        #nn.Conv3d(16,32,(2,2,3), stride = (2,2,2), padding = (1,0,0)),
+        #V3 14,11,9 -> 7,5,4
+        #nn.Conv3d(16,32,(2,3,3), stride = (2,2,2)),
+        #V4 15,10,9 -> 7,5,4
+        #nn.Conv3d(16,32,(3,2,3), stride = (2,2,2)),
+        #PPA 14,15,11 -> 7,5,4
+        #nn.Conv3d(16,32,(2,7,5), stride = (2,2,2)),
+        #LVC 14,11,9 ->7,5,4
+        #nn.Conv3d(16,32,(2,3,3), stride = (2,2,2)),
+        #LOC 21,10,15 -> 7,5,4
+        #nn.Conv3d(16,32,(9,2,9), stride = (2,2,2)),
+        #HVC 20,13,8 -> 7,5,4
+        #nn.Conv3d(16,32,(8,5,2), stride = (2,2,2)),
+        #FFA 20,10,13 -> 7,5,4
         self.conv8 = nn.Sequential(
-            nn.Conv3d(16, 32, (8,5,3), stride = (2,2,2)),
+            nn.Conv3d(16,32,(8,2,7), stride = (2,2,2)),
             nn.BatchNorm3d(32),
             nn.ReLU())
         
@@ -167,16 +205,16 @@ def train(model, train_loader, num_epochs, criterion, optimizer, losses = []):
 
 if __name__ == "__main__":
     #Load the data
-    roi = 'VC'
+    roi = 'FFA'
     print ("Loading data for ROI:",roi)
     # X = np.load(dir_path+'/data/Subject1_'+roi+'_fmri.npy')
     # datatype=np.load(dir_path+'/data/Subject1_datatype.npy')
-    X = np.load(dir_path+'/padded_data/VC.npy')
+    X = np.load(dir_path+'/padded_data/{}.npy'.format(roi))
     datatype = np.load(dir_path+'/padded_data/datatype.npy')
     y = np.zeros((len(datatype),))
     y[np.where(datatype == 3)[0]] = 1
-
-    #print (X.shape)
+    
+    print ("Data shape:", X.shape)
     #print (y.shape)
     #hyperparameters
     learning_rate = 0.0001
