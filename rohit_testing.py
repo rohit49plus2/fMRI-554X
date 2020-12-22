@@ -148,10 +148,10 @@ for subject in {'Subject1' : dir_path+'/original code/data/Subject1.h5'}: #for n
 
         plt.show()
 
-    plot_average_fmri_colors('VC')
+    #plot_average_fmri_colors('VC')
     for roi in rois: #for now only VC later on use rois dictionary from god_config
-        co = coordinates(roi)
-        np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
-
+        #co = coordinates(roi)
+        #np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'coordinates',co)
+        print ("Padding:",roi)
         fmri_padded=padded_fmri(roi)
         np.save(dir_path+'/data/'+subject+'_'+roi+'_'+'fmri',fmri_padded)
